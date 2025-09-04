@@ -24,7 +24,7 @@ const initialCategories: CategoryWithUI[] = [
 ];
 
 export const useFinanceStore = create<FinanceState>(set => ({
- inicial
+  initialCategories,
   incomes: [],
   expenses: [],
   categories: initialCategories,
