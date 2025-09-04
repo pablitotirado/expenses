@@ -32,7 +32,7 @@ jobs:
           pnpm-version: '8' # Backend uses pnpm version 8
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ secrets.AWS_REGION || 'us-east-1' }}
+          aws-region: us-east-1
 
       - name: Deploy Backend
         id: backend-deploy
@@ -44,7 +44,7 @@ jobs:
           jwt-secret: ${{ secrets.JWT_SECRET }}
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ secrets.AWS_REGION }}
+          aws-region: us-east-1
 
   deploy-frontend:
     name: Deploy Frontend
