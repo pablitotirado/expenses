@@ -1,0 +1,35 @@
+name: 'Deploy Frontend'
+description: 'Deploy frontend application'
+
+inputs:
+  api-gateway-url:
+    description: 'API Gateway URL from backend'
+    required: true
+  pulumi-config-passphrase:
+    description: 'Pulumi config passphrase'
+    required: true
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Build shared package
+      shell: bash
+      working-directory: packages/shared
+      run: pnpm build
+
+    - name: Build frontend
+      shell: bash
+      working-directory: apps/web
+      run: pnpm build
+      env:
+        VITE_API_URL: '${{ inputs.api-gateway-url }}/api'
+
+    - name: Deploy with Pulumi
+      shell: bash
+      working-directory: apps/web/infra
+      run: |
+        pulumi login s3://pulumi-shared/expenses-web-frontend
+        pulumi stack select dev --create
+        pulumi up --yes
+      env:
+        PULUMI_CONFIG_PASSPHRASE: ${{ inputs.pulumi-config-passphrase }}

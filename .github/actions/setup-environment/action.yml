@@ -1,0 +1,49 @@
+name: 'Setup Environment'
+description: 'Setup Node.js, pnpm, AWS credentials and Pulumi'
+
+inputs:
+  node-version:
+    description: 'Node.js version'
+    required: true
+    default: '18'
+  pnpm-version:
+    description: 'pnpm version'
+    required: true
+    default: '9.0.0'
+  aws-access-key-id:
+    description: 'AWS Access Key ID'
+    required: true
+  aws-secret-access-key:
+    description: 'AWS Secret Access Key'
+    required: true
+  aws-region:
+    description: 'AWS Region'
+    required: true
+    default: 'us-east-1'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ inputs.node-version }}
+
+    - name: Setup pnpm
+      uses: pnpm/action-setup@v2
+      with:
+        version: ${{ inputs.pnpm-version }}
+
+    - name: Install dependencies
+      shell: bash
+      run: pnpm install
+
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        aws-access-key-id: ${{ inputs.aws-access-key-id }}
+        aws-secret-access-key: ${{ inputs.aws-secret-access-key }}
+        aws-region: ${{ inputs.aws-region }}
+
+    - name: Setup Pulumi
+      uses: pulumi/setup-pulumi@v2

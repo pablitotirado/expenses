@@ -1,0 +1,130 @@
+name: 'Deploy Backend'
+description: 'Deploy backend infrastructure and application'
+
+inputs:
+  pulumi-config-passphrase:
+    description: 'Pulumi config passphrase'
+    required: true
+  openai-api-key:
+    description: 'OpenAI API Key'
+    required: true
+  db-secret:
+    description: 'Database secret'
+    required: true
+  jwt-secret:
+    description: 'JWT secret'
+    required: true
+  aws-access-key-id:
+    description: 'AWS Access Key ID'
+    required: true
+  aws-secret-access-key:
+    description: 'AWS Secret Access Key'
+    required: true
+  aws-region:
+    description: 'AWS Region'
+    required: true
+
+outputs:
+  api-gateway-url:
+    description: 'API Gateway URL'
+    value: ${{ steps.get-api-url.outputs.api-url }}
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Build shared package
+      shell: bash
+      working-directory: packages/shared
+      run: pnpm build
+
+    - name: Generate Prisma client
+      shell: bash
+      working-directory: apps/backend
+      run: pnpm db:generate
+
+    - name: Build backend
+      shell: bash
+      working-directory: apps/backend
+      run: pnpm build
+
+    - name: Deploy infrastructure (includes Docker build and push)
+      shell: bash
+      working-directory: apps/backend/infra
+      run: |
+        pulumi login s3://pulumi-shared/expenses-backend
+        pulumi stack select dev --create 
+        pulumi config set expense-manager-backend-infra:environment dev
+        pulumi config set --secret openAiApiKey ${{ inputs.openai-api-key }}
+        pulumi config set --secret dbPassword ${{ inputs.db-secret }}
+        pulumi config set --secret jwtSecret ${{ inputs.jwt-secret }}
+        pulumi up --yes
+      env:
+        PULUMI_CONFIG_PASSPHRASE: ${{ inputs.pulumi-config-passphrase }}
+        AWS_ACCESS_KEY_ID: ${{ inputs.aws-access-key-id }}
+        AWS_SECRET_ACCESS_KEY: ${{ inputs.aws-secret-access-key }}
+        AWS_REGION: ${{ inputs.aws-region }}
+
+    - name: Wait for service to be healthy
+      shell: bash
+      working-directory: apps/backend/infra
+      run: |
+        echo "⏳ Waiting for Fargate service to be healthy..."
+
+        SERVICE_NAME=$(pulumi stack output fargateServiceId --show-secrets | sed 's/.*service\///')
+        CLUSTER_NAME=$(pulumi stack output fargateClusterId --show-secrets | sed 's/.*cluster\///')
+
+        echo "🔍 Monitoring service: $SERVICE_NAME in cluster: $CLUSTER_NAME"
+
+        # Wait for service to be stable
+        aws ecs wait services-stable \
+          --cluster "$CLUSTER_NAME" \
+          --services "$SERVICE_NAME" \
+          --region ${{ inputs.aws-region }}
+
+        echo "✅ Service is healthy and stable!"
+      env:
+        PULUMI_CONFIG_PASSPHRASE: ${{ inputs.pulumi-config-passphrase }}
+        AWS_ACCESS_KEY_ID: ${{ inputs.aws-access-key-id }}
+        AWS_SECRET_ACCESS_KEY: ${{ inputs.aws-secret-access-key }}
+        AWS_REGION: ${{ inputs.aws-region }}
+
+    - name: Verify health endpoint
+      shell: bash
+      working-directory: apps/backend/infra
+      run: |
+        echo "🔍 Verifying health endpoint..."
+
+        # Get ALB DNS name
+        ALB_DNS=$(pulumi stack output albDnsName --show-secrets)
+
+        if [ -n "$ALB_DNS" ]; then
+          echo "🌐 Service URL: http://$ALB_DNS"
+          echo "🔍 Health check: http://$ALB_DNS/api/health"
+
+          # Wait a bit more for ALB to be ready
+          sleep 30
+
+          # Test health endpoint
+          if curl -f "http://$ALB_DNS/api/health"; then
+            echo "✅ Health endpoint is responding correctly!"
+          else
+            echo "⚠️  Health endpoint not responding, but deployment completed"
+          fi
+        else
+          echo "⚠️  Could not get ALB DNS name"
+        fi
+      env:
+        PULUMI_CONFIG_PASSPHRASE: ${{ inputs.pulumi-config-passphrase }}
+        AWS_ACCESS_KEY_ID: ${{ inputs.aws-access-key-id }}
+        AWS_SECRET_ACCESS_KEY: ${{ inputs.aws-secret-access-key }}
+        AWS_REGION: ${{ inputs.aws-region }}
+
+    - name: Get API Gateway URL
+      id: get-api-url
+      shell: bash
+      working-directory: apps/backend/infra
+      run: |
+        API_GATEWAY_URL=$(pulumi stack output apiGatewayUrl --show-secrets)
+        echo "api-url=$API_GATEWAY_URL" >> $GITHUB_OUTPUT
+      env:
+        PULUMI_CONFIG_PASSPHRASE: ${{ inputs.pulumi-config-passphrase }}
