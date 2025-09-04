@@ -1,0 +1,1 @@
+export { FargateServiceModule } from './fargate';

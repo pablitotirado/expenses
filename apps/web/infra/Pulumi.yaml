@@ -1,0 +1,11 @@
+name: expenses-web-infra
+runtime:
+  name: nodejs
+  options:
+    packagemanager: pnpm
+main: main.ts
+description: Infrastructure for expenses web frontend deployment
+config:
+  pulumi:tags:
+    value:
+      pulumi:template: typescript

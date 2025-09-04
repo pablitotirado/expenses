@@ -1,0 +1,6 @@
+config:
+  aws:region: us-east-1
+  stori-backend-infra:environment: dev
+  stori-backend-infra:projectName: stori-backend
+  stori-backend-infra:dbInstanceClass: db.t3.micro
+  stori-backend-infra:dbAllocatedStorage: 20

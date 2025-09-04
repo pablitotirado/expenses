@@ -1,0 +1,15 @@
+name: expense-manager-backend-infra
+runtime:
+  name: nodejs
+  options:
+    packagemanager: pnpm
+main: main.ts
+description: Infrastructure as code for NestJS backend on AWS
+config:
+  aws:region:
+    value: us-east-1
+  pulumi:tags:
+    value:
+      pulumi:template: typescript
+      project: expense-manager
+      environment: production
