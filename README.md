@@ -5,7 +5,7 @@ Sistema completo de gestión financiera personal construido con NestJS, React y 
 ## 🏗️ Estructura del Monorepo
 
 ```
-stori-expenses/
+expenses/
 ├── apps/
 │   ├── backend/           # API NestJS con Prisma y PostgreSQL
 │   │   ├── src/           # Código fuente del backend
@@ -38,7 +38,7 @@ pnpm install
 ### Desarrollo local completo
 
 ```bash
-# Levantar backend y frontend en paralelo
+# Levantar backend y frontend en paralelo, incluyendo base de datos.
 pnpm run dev:all
 
 # O por separado:

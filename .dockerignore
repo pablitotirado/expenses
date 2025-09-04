@@ -1,71 +1,20 @@
-# Dependencias globales
 node_modules
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
-
-# Archivos de construcción
-dist
-build
-*.tsbuildinfo
-
-# Archivos de entorno
+npm-debug.log
+.git
+.gitignore
+README.md
 .env
 .env.local
 .env.development.local
 .env.test.local
 .env.production.local
-
-# Archivos de logs
-logs
-*.log
-
-# Archivos de cobertura de tests
+dist
+build
 coverage
-*.lcov
-
-# Archivos de IDE
+.nyc_output
+.cache
 .vscode
 .idea
-*.swp
-*.swo
-
-# Archivos del sistema
+*.log
 .DS_Store
 Thumbs.db
-
-# Archivos de Git
-.git
-.gitignore
-
-# Archivos de Docker
-Dockerfile*
-docker-compose*
-.dockerignore
-
-# Archivos de Pulumi
-apps/backend/infra/
-Pulumi*.yaml
-
-# Archivos de test
-test/
-*.spec.ts
-*.test.ts
-
-# Archivos de configuración de desarrollo
-eslint.config.mjs
-prettier.config.js
-jest.config.js
-
-# Excluir otros directorios de apps que no sean backend
-apps/web/
-apps/*/node_modules/
-apps/*/dist/
-apps/*/build/
-
-# Archivos de Turbo
-.turbo/
-
-# Incluir explícitamente el pnpm-lock.yaml
-!pnpm-lock.yaml

@@ -1,0 +1,61 @@
+# Multi-stage build para el frontend
+FROM node:20-alpine AS base
+
+# Instalar dependencias del sistema
+RUN apk add --no-cache libc6-compat
+
+# Establecer directorio de trabajo
+WORKDIR /app
+
+# Copiar archivos de configuración de dependencias
+COPY apps/web/package*.json ./
+COPY packages/shared/package*.json ./packages/shared/
+COPY packages/shared/src ./packages/shared/src
+COPY packages/shared/tsconfig.json ./packages/shared/
+COPY pnpm-workspace.yaml ./
+COPY pnpm-lock.yaml ./
+
+# Instalar pnpm globalmente
+RUN npm install -g pnpm
+
+# Instalar dependencias
+RUN pnpm install --no-frozen-lockfile
+
+# Construir el paquete shared
+RUN cd packages/shared && pnpm run build
+
+# Etapa de desarrollo
+FROM base AS development
+
+# Copiar código fuente del web
+COPY apps/web/ .
+
+# Instalar dependencias del web específicamente
+RUN pnpm install --no-frozen-lockfile
+
+# Exponer puerto
+EXPOSE 5173
+
+# Comando de desarrollo
+CMD ["pnpm", "run", "dev", "--host", "0.0.0.0"]
+
+# Etapa de producción
+FROM base AS production
+
+# Copiar código fuente del web
+COPY apps/web/ .
+
+# Instalar dependencias del web específicamente
+RUN pnpm install --no-frozen-lockfile
+
+# Construir la aplicación
+RUN pnpm run build
+
+# Instalar servidor estático
+RUN npm install -g serve
+
+# Exponer puerto
+EXPOSE 5173
+
+# Comando de producción
+CMD ["serve", "-s", "dist", "-l", "5173"]

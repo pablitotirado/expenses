@@ -1,0 +1,67 @@
+services:
+  # Base de datos PostgreSQL
+  postgres:
+    image: postgres:15-alpine
+    container_name: expense-manager-postgres
+    restart: unless-stopped
+    ports:
+      - '5432:5432'
+    environment:
+      POSTGRES_DB: expense_manager
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U postgres -d expense_manager']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    networks:
+      - expense-network
+
+  # Backend NestJS
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: expense-manager-backend
+    restart: unless-stopped
+    ports:
+      - '3000:3000'
+    environment:
+      NODE_ENV: development
+      PORT: 3000
+      DATABASE_URL: 'postgresql://postgres:postgres@postgres:5432/expense_manager?schema=public'
+      OPENAI_API_KEY: your_openai_api_key_here
+      JWT_SECRET: your_jwt_secret_key_here
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - expense-network
+
+  # Frontend React + Vite
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile.web
+      target: development
+    container_name: expense-manager-web
+    restart: unless-stopped
+    ports:
+      - '5173:5173'
+    environment:
+      VITE_API_URL: http://localhost:3000/api
+    depends_on:
+      - backend
+    networks:
+      - expense-network
+
+volumes:
+  postgres_data:
+
+networks:
+  expense-network:
+    driver: bridge
