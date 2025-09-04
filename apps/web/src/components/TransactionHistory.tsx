@@ -3,6 +3,7 @@ import { useTransactions } from '../hooks/useTransactions';
 import { useDeleteIncome } from '../hooks/useIncomes';
 import { useDeleteExpense } from '../hooks/useExpenses';
 import type { TransactionFilters } from '../types/transaction';
+import { formatCurrency } from '../lib/format';
 
 export const TransactionHistory: React.FC = () => {
   const [filter, setFilter] = useState<'all' | 'income' | 'expense'>('all');
@@ -14,13 +15,6 @@ export const TransactionHistory: React.FC = () => {
   };
 
   const { transactions, isLoading, error } = useTransactions(filters);
-
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('es-AR', {
-      style: 'currency',
-      currency: 'ARS',
-    }).format(amount);
-  };
 
   const formatDate = (date: string | Date) => {
     const dateObj = typeof date === 'string' ? new Date(date) : date;

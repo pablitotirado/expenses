@@ -21,12 +21,11 @@ export const AIAssistant: React.FC = () => {
     { value: 'last_3_months', label: 'Últimos 3 meses' },
   ];
 
-  const handleAskAI = () => {
+  const handleAskAI = () =>
     aiMutation.mutate({
       period: selectedPeriod,
       userGoal: userGoal || undefined,
     });
-  };
 
   const handleToggleGoalSection = () => {
     setShowGoalSection(!showGoalSection);
@@ -60,7 +59,6 @@ export const AIAssistant: React.FC = () => {
               {showGoalSection ? 'Ocultar' : 'Agregar'} meta personalizada
             </button>
 
-            {/* Pills de período */}
             <div className="flex items-center gap-2">
               <div className="flex gap-2">
                 {periodOptions.map(option => (
@@ -78,7 +76,6 @@ export const AIAssistant: React.FC = () => {
                 ))}
               </div>
 
-              {/* Icono de información */}
               <div className="relative group">
                 <svg
                   className="w-4 h-4 text-gray-400 hover:text-gray-600 cursor-help"
@@ -95,7 +92,6 @@ export const AIAssistant: React.FC = () => {
                   />
                 </svg>
 
-                {/* Tooltip */}
                 <div className="absolute bottom-full right-0 mb-2 px-3 py-2 bg-gray-900 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-10">
                   Selecciona el período de tiempo para el análisis de la IA
                   <div className="absolute top-full right-2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900"></div>
@@ -124,7 +120,6 @@ export const AIAssistant: React.FC = () => {
           )}
         </div>
 
-        {/* Área de respuesta */}
         <div className="min-h-[120px] bg-gray-50 rounded-lg p-4 border-2 border-dashed border-gray-200">
           {aiMutation.isPending ? (
             <div className="flex items-center justify-center h-full">

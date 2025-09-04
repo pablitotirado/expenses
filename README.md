@@ -83,8 +83,6 @@ El workflow automatizado maneja:
 - **Deploy a staging** en merge a `main`
 - **Deploy a producción** mediante tags
 
-**TODO**: Configurar workflows de GitHub Actions (`.github/workflows/`)
-
 ## 📚 Documentación Específica
 
 - [Backend README](./apps/backend/README.md) - API NestJS, base de datos, infraestructura
@@ -100,19 +98,13 @@ Revisar los archivos `.env.example` en:
 
 ## 🏢 Arquitectura
 
+![Arquitectura del Sistema](./diagrams/expenses.png)
+
 - **Frontend**: React 19 + Vite + TailwindCSS + Zustand
 - **Backend**: NestJS + Prisma + PostgreSQL + OpenAI API
 - **Infraestructura**: AWS (ECS Fargate, RDS, ALB, CloudFront, S3)
 - **IaC**: Pulumi con TypeScript
 - **Monorepo**: pnpm workspaces + Turbo
-
-## 🤝 Contribución
-
-1. Fork del repositorio
-2. Crear feature branch: `git checkout -b feature/nueva-funcionalidad`
-3. Commit cambios: `git commit -m 'feat: agregar nueva funcionalidad'`
-4. Push branch: `git push origin feature/nueva-funcionalidad`
-5. Crear Pull Request
 
 ---
 

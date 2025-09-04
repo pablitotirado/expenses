@@ -5,6 +5,7 @@ import { CategoryExpenses } from './CategoryExpenses';
 import { ChartsSection } from './ChartsSection';
 import { ExpenseForm } from './ExpenseForm';
 import { AIAssistant } from './AIAssistant';
+import { formatCurrency } from '../lib/format';
 
 export const Dashboard: React.FC = () => {
   // Obtener datos financieros del backend
@@ -18,13 +19,6 @@ export const Dashboard: React.FC = () => {
   };
 
   const data = financialData || defaultData;
-
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('es-AR', {
-      style: 'currency',
-      currency: 'ARS',
-    }).format(amount);
-  };
 
   // Calcular porcentajes para los progress bars
   const expensesPercentage =

@@ -1,3 +1,5 @@
+import { formatCurrency } from '../lib/format';
+
 interface CategoryProgressBarProps {
   category: string;
   amount: number;
@@ -11,13 +13,6 @@ export const CategoryProgressBar: React.FC<CategoryProgressBarProps> = ({
   percentage,
   className = '',
 }) => {
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('es-AR', {
-      style: 'currency',
-      currency: 'ARS',
-    }).format(amount);
-  };
-
   return (
     <div className={`p-3 bg-gray-50 rounded-lg ${className}`}>
       <div className="flex items-center justify-between mb-1">
