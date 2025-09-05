@@ -110,23 +110,15 @@ Revisar los archivos `.env.example` en:
 - `apps/backend/.env.example`
 - `apps/web/.env.example`
 
-## 🏢 Arquitectura
-
-![Arquitectura del Sistema](./diagrams/expenses.png)
-
-- **Frontend**: React 19 + Vite + TailwindCSS + TanStack Query + Formik + Yup + Chart.js
-- **Backend**: NestJS + Prisma + PostgreSQL + OpenAI API
-- **Infraestructura**: AWS (ECS Fargate, RDS, ALB, CloudFront, S3)
-- **IaC**: Pulumi con TypeScript
-- **Monorepo**: pnpm workspaces + Turbo
-
 ---
 
 **Tecnologías**: TypeScript, NestJS, React 19, Vite, TailwindCSS, Zustand, Prisma, PostgreSQL, OpenAI API, AWS, Pulumi, Docker, pnpm, Turbo
 
 ## System Design Overview
 
-### Arquitectura
+### 🏢 Arquitectura
+
+![Arquitectura del Sistema](./diagrams/expenses.png)
 
 La solución se basa en una arquitectura full-stack que combina:
 
