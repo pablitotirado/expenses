@@ -7,10 +7,10 @@ import {
   Param,
   Delete,
 } from '@nestjs/common';
-import { ExpensesService } from './expenses.service';
-import { CreateExpenseDto } from './dto/create-expense.dto';
-import { UpdateExpenseDto } from './dto/update-expense.dto';
-import { ExpenseWithCategory } from '../common/types/prisma.types';
+import { ExpensesService } from '../service/expenses.service';
+import { CreateExpenseDto } from '../dto/create-expense.dto';
+import { UpdateExpenseDto } from '../dto/update-expense.dto';
+import { ExpenseWithCategory } from '../../common/types/prisma.types';
 
 @Controller('expenses')
 export class ExpensesController {
@@ -29,7 +29,7 @@ export class ExpensesController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string): Promise<ExpenseWithCategory | null> {
+  findOne(@Param('id') id: string): Promise<ExpenseWithCategory> {
     return this._expensesService.findOne(id);
   }
 

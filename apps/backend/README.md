@@ -20,13 +20,42 @@ API REST desarrollada con NestJS para la gestión de finanzas personales, incluy
 ```
 src/
 ├── ai/                    # Módulo de IA para recomendaciones
+│   ├── controller/        # Controladores del módulo
+│   ├── service/          # Servicios del módulo
+│   ├── dto/              # DTOs del módulo
+│   └── prompts/          # Prompts para IA
 ├── categories/            # Gestión de categorías de gastos
+│   ├── controller/        # Controladores del módulo
+│   ├── service/          # Servicios del módulo
+│   ├── dto/              # DTOs del módulo
+│   └── repositories/     # Repositorios del módulo
 ├── common/               # Utilidades compartidas y repositorios base
 ├── expenses/             # Gestión de gastos
+│   ├── controller/        # Controladores del módulo
+│   ├── service/          # Servicios del módulo
+│   ├── dto/              # DTOs del módulo
+│   └── repositories/     # Repositorios del módulo
 ├── incomes/              # Gestión de ingresos
+│   ├── controller/        # Controladores del módulo
+│   ├── service/          # Servicios del módulo
+│   ├── dto/              # DTOs del módulo
+│   └── repositories/     # Repositorios del módulo
 ├── prisma/               # Configuración de Prisma
 └── statistics/           # Análisis y estadísticas financieras
+    ├── controller/        # Controladores del módulo
+    ├── service/          # Servicios del módulo
+    └── repositories/     # Repositorios del módulo
 ```
+
+### Organización de Módulos
+
+Cada módulo sigue una estructura consistente con carpetas especializadas:
+
+- **`controller/`**: Contiene los controladores REST de NestJS
+- **`service/`**: Contiene la lógica de negocio y servicios
+- **`dto/`**: Contiene los Data Transfer Objects para validación
+- **`repositories/`**: Contiene los repositorios para acceso a datos
+- **`prompts/`**: (Solo módulo AI) Contiene los prompts para IA
 
 ### Patrón Repository
 

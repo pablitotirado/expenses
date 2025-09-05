@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { expenseService } from '../services/expenseService';
 import { statisticsKeys } from './useStatistics';
+import { isNotFoundError } from '../types/api';
 import type { CreateExpenseDto, UpdateExpenseDto } from '../types/expense';
 
 export const expenseKeys = {
@@ -24,6 +25,14 @@ export const useExpense = (id: string) => {
     queryKey: expenseKeys.detail(id),
     queryFn: () => expenseService.findOne(id),
     enabled: !!id,
+    retry: (failureCount, error) => {
+      // No reintentar si es un error 404 (recurso no encontrado)
+      if (isNotFoundError(error)) {
+        return false;
+      }
+      // Reintentar hasta 3 veces para otros errores
+      return failureCount < 3;
+    },
   });
 };
 

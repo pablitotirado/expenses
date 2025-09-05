@@ -1,6 +1,12 @@
 import { useState } from 'react';
-import { Formik, Form, Field, ErrorMessage } from 'formik';
+import {
+  Formik,
+  Form,
+  Field,
+  ErrorMessage as FormikErrorMessage,
+} from 'formik';
 import { useCreateIncome } from '../hooks/useIncomes';
+import { ErrorMessage } from './ErrorMessage';
 import {
   backendIncomeSchema,
   type BackendIncomeFormData,
@@ -91,7 +97,7 @@ export const IncomeForm: React.FC = () => {
                     />
                   </div>
                   <div className="h-5 mt-1">
-                    <ErrorMessage
+                    <FormikErrorMessage
                       name="amount"
                       component="div"
                       className="text-sm text-red-600"
@@ -114,7 +120,7 @@ export const IncomeForm: React.FC = () => {
                     placeholder="Ej: Salario, Freelance, etc. (opcional)"
                   />
                   <div className="h-5 mt-1">
-                    <ErrorMessage
+                    <FormikErrorMessage
                       name="description"
                       component="div"
                       className="text-sm text-red-600"
@@ -155,15 +161,10 @@ export const IncomeForm: React.FC = () => {
               </div>
 
               {/* Mensaje de error de la mutación */}
-              {createIncomeMutation.error && (
-                <div className="mt-3 p-3 bg-red-50 border border-red-200 rounded-md">
-                  <p className="text-sm text-red-600">
-                    {(createIncomeMutation.error as any)?.response?.data
-                      ?.message ||
-                      'Error al crear el ingreso. Inténtalo de nuevo.'}
-                  </p>
-                </div>
-              )}
+              <ErrorMessage
+                error={createIncomeMutation.error}
+                className="mt-3"
+              />
 
               {/* Mensaje de éxito */}
               {createIncomeMutation.isSuccess && (

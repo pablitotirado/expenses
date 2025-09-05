@@ -29,43 +29,59 @@ expenses/
 
 ## 🚀 Quickstart
 
-### Instalación de dependencias
-
-```bash
-pnpm install
-```
-
-### Desarrollo local completo
-
 ```bash
 # Levantar backend y frontend en paralelo, incluyendo base de datos.
 pnpm run dev:all
-
-# O por separado:
-pnpm run dev:backend    # Backend en http://localhost:3000
-pnpm run dev:web        # Frontend en http://localhost:5173
 ```
 
-### Base de datos local
-
-```bash
-cd apps/backend
-pnpm run docker:up      # PostgreSQL en Docker
-pnpm run db:migrate     # Aplicar migraciones
-pnpm run db:studio      # Abrir Prisma Studio
-```
+Esto configura automáticamente las variables de entorno y levanta todos los servicios necesarios.
 
 ## 📋 Comandos Esenciales
 
-| Comando                | Descripción                      |
-| ---------------------- | -------------------------------- |
-| `pnpm run build`       | Build de todas las aplicaciones  |
-| `pnpm run dev`         | Desarrollo de todas las apps     |
-| `pnpm run dev:web`     | Solo desarrollo del frontend     |
-| `pnpm run dev:backend` | Solo desarrollo del backend      |
-| `pnpm run lint`        | Linting de todo el workspace     |
-| `pnpm run format`      | Formateo con Prettier            |
-| `pnpm run check-types` | Verificación de tipos TypeScript |
+| Comando                    | Descripción                      |
+| -------------------------- | -------------------------------- |
+| `pnpm run build`           | Build de todas las aplicaciones  |
+| `pnpm run dev`             | Desarrollo de todas las apps     |
+| `pnpm run dev:web`         | Solo desarrollo del frontend     |
+| `pnpm run dev:backend`     | Solo desarrollo del backend      |
+| `pnpm run lint`            | Linting de todo el workspace     |
+| `pnpm run format`          | Formateo con Prettier            |
+| `pnpm run check-types`     | Verificación de tipos TypeScript |
+| `pnpm run test:e2e:docker` | Ejecutar tests e2e con Docker    |
+
+## 🧪 Testing
+
+### Tests End-to-End (E2E)
+
+Los tests e2e se ejecutan en un entorno Docker aislado que incluye:
+
+- Backend con base de datos PostgreSQL
+- Tests automatizados con Node.js test runner nativo
+- Validación completa de la API REST
+
+```bash
+# Ejecutar tests e2e completos
+pnpm run test:e2e:docker
+```
+
+Este comando:
+
+1. Construye las imágenes Docker necesarias
+2. Levanta los servicios (backend + DB)
+3. Ejecuta los tests e2e contra la API
+4. Limpia automáticamente los contenedores y volúmenes
+
+### Tests Unitarios
+
+Los tests unitarios se ejecutan individualmente en cada aplicación:
+
+```bash
+# Backend
+cd apps/backend && pnpm test
+
+# Frontend
+cd apps/web && pnpm test
+```
 
 ## 🔄 Flujo de Desarrollo
 
@@ -74,14 +90,12 @@ pnpm run db:studio      # Abrir Prisma Studio
 3. **Testing**: Ejecutar tests antes de commits
 4. **Code Review**: PRs obligatorios para `main`
 
-## 🚚 CI/CD
+## 🚚 Despliegue
 
-El workflow automatizado maneja:
+El despliegue se realiza mediante:
 
-- **Build y test** en cada PR
-- **Linting y type checking** automático
-- **Deploy a staging** en merge a `main`
-- **Deploy a producción** mediante tags
+- **Infraestructura**: Pulumi para configurar recursos en AWS
+- **Deploy a producción**: Mediante comandos de Pulumi
 
 ## 📚 Documentación Específica
 
@@ -100,7 +114,7 @@ Revisar los archivos `.env.example` en:
 
 ![Arquitectura del Sistema](./diagrams/expenses.png)
 
-- **Frontend**: React 19 + Vite + TailwindCSS + Zustand
+- **Frontend**: React 19 + Vite + TailwindCSS + TanStack Query + Formik + Yup + Chart.js
 - **Backend**: NestJS + Prisma + PostgreSQL + OpenAI API
 - **Infraestructura**: AWS (ECS Fargate, RDS, ALB, CloudFront, S3)
 - **IaC**: Pulumi con TypeScript
@@ -108,4 +122,4 @@ Revisar los archivos `.env.example` en:
 
 ---
 
-**Tecnologías**: TypeScript, NestJS, React, Prisma, PostgreSQL, AWS, Pulumi, Docker
+**Tecnologías**: TypeScript, NestJS, React 19, Vite, TailwindCSS, Zustand, Prisma, PostgreSQL, OpenAI API, AWS, Pulumi, Docker, pnpm, Turbo

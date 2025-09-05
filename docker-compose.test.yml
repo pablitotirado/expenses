@@ -1,0 +1,85 @@
+version: '3.8'
+
+services:
+  # Base de datos PostgreSQL para tests E2E
+  postgres-e2e:
+    image: postgres:15-alpine
+    container_name: expense-manager-postgres-e2e
+    restart: 'no'
+    ports:
+      - '5433:5432'
+    environment:
+      POSTGRES_DB: expense_manager_e2e
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - postgres_e2e_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U postgres -d expense_manager_e2e']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+    networks:
+      - e2e-network
+
+  # Backend para tests E2E
+  backend-e2e:
+    build:
+      context: ./
+      dockerfile: Dockerfile.test
+    container_name: expense-manager-backend-e2e
+    restart: 'no'
+    ports:
+      - '3001:3000'
+    environment:
+      NODE_ENV: test
+      PORT: 3000
+      DATABASE_URL: 'postgresql://postgres:postgres@postgres-e2e:5432/expense_manager_e2e?schema=public'
+      OPENAI_API_KEY: test_openai_key
+      JWT_SECRET: test_jwt_secret_key
+    depends_on:
+      postgres-e2e:
+        condition: service_healthy
+    networks:
+      - e2e-network
+    healthcheck:
+      test:
+        [
+          'CMD-SHELL',
+          'wget --no-verbose --tries=1 --spider http://localhost:3000/api/health || exit 1',
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+
+  # Tests E2E
+  e2e-tests:
+    build:
+      context: ./
+      dockerfile: Dockerfile.e2e
+    container_name: expense-manager-e2e-tests
+    restart: 'no'
+    environment:
+      API_BASE_URL: 'http://backend-e2e:3000/api'
+    depends_on:
+      backend-e2e:
+        condition: service_healthy
+    networks:
+      - e2e-network
+    command: >
+      sh -c "
+        echo '🚀 Iniciando tests E2E en entorno Docker aislado...' &&
+        echo '⏳ Esperando a que el backend esté listo...' &&
+        sleep 15 &&
+        echo '🧪 Ejecutando tests E2E...' &&
+        pnpm test
+      "
+
+volumes:
+  postgres_e2e_data:
+
+networks:
+  e2e-network:
+    driver: bridge

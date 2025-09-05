@@ -7,10 +7,10 @@ import {
   Param,
   Delete,
 } from '@nestjs/common';
-import { IncomesService } from './incomes.service';
-import { CreateIncomeDto } from './dto/create-income.dto';
-import { UpdateIncomeDto } from './dto/update-income.dto';
-import { IncomeType } from '../common/types/prisma.types';
+import { IncomesService } from '../service/incomes.service';
+import { CreateIncomeDto } from '../dto/create-income.dto';
+import { UpdateIncomeDto } from '../dto/update-income.dto';
+import { IncomeType } from '../../common/types/prisma.types';
 
 @Controller('incomes')
 export class IncomesController {
@@ -27,12 +27,15 @@ export class IncomesController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string): Promise<IncomeType | null> {
+  findOne(@Param('id') id: string): Promise<IncomeType> {
     return this._incomesService.findOne(id);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateIncomeDto: UpdateIncomeDto): Promise<IncomeType> {
+  update(
+    @Param('id') id: string,
+    @Body() updateIncomeDto: UpdateIncomeDto,
+  ): Promise<IncomeType> {
     return this._incomesService.update(id, updateIncomeDto);
   }
 

@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { categoryService } from '../services/categoryService';
+import { isNotFoundError } from '../types/api';
 import type { CreateCategoryDto } from '../types/category';
 
 export const categoryKeys = {
@@ -23,6 +24,14 @@ export const useCategory = (id: string) => {
     queryKey: categoryKeys.detail(id),
     queryFn: () => categoryService.findOne(id),
     enabled: !!id,
+    retry: (failureCount, error) => {
+      // No reintentar si es un error 404 (recurso no encontrado)
+      if (isNotFoundError(error)) {
+        return false;
+      }
+      // Reintentar hasta 3 veces para otros errores
+      return failureCount < 3;
+    },
   });
 };
 

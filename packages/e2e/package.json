@@ -1,0 +1,16 @@
+{
+  "name": "expense-manager-e2e",
+  "version": "1.0.0",
+  "description": "E2E tests for Expense Manager",
+  "type": "module",
+  "scripts": {
+    "test": "node --test test/*.test.js",
+    "test:watch": "node --test --watch test/*.test.js",
+    "test:clean": "node clean-db.js && pnpm test",
+    "clean": "node clean-db.js"
+  },
+  "dependencies": {},
+  "engines": {
+    "node": ">=18"
+  }
+}

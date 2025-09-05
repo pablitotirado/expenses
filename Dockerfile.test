@@ -1,0 +1,98 @@
+# Dockerfile específico para tests del backend
+FROM node:18-alpine AS base
+
+# Instalar dependencias del sistema necesarias para Prisma y health checks
+RUN apk add --no-cache libc6-compat openssl wget
+
+# Establecer directorio de trabajo
+WORKDIR /app
+
+# Copiar archivos de configuración de dependencias
+COPY apps/backend/package*.json ./
+COPY packages/shared/package*.json ./packages/shared/
+COPY packages/shared/src ./packages/shared/src
+COPY packages/shared/tsconfig.json ./packages/shared/
+COPY pnpm-workspace.yaml ./
+COPY pnpm-lock.yaml ./
+
+# Instalar pnpm globalmente
+RUN npm install -g pnpm
+
+# Instalar dependencias (incluyendo dev dependencies para tests)
+RUN pnpm install --no-frozen-lockfile
+
+# Copiar archivos de Prisma
+COPY apps/backend/prisma ./prisma/
+
+# Generar cliente de Prisma
+RUN pnpm run db:generate
+
+# Construir el paquete shared
+RUN cd packages/shared && pnpm run build
+
+# Etapa de construcción
+FROM base AS builder
+
+# Copiar código fuente
+COPY apps/backend/ .
+
+# Copiar el paquete shared construido desde la etapa base
+COPY --from=base /app/packages ./packages
+COPY --from=base /app/node_modules ./node_modules
+
+# Construir la aplicación
+RUN pnpm run build
+
+# Etapa de test
+FROM node:18-alpine AS test
+
+# Instalar dependencias del sistema necesarias para Prisma y health checks
+RUN apk add --no-cache libc6-compat openssl wget
+
+# Crear usuario no-root para seguridad
+RUN addgroup -g 1001 -S nodejs
+RUN adduser -S nestjs -u 1001
+
+# Establecer directorio de trabajo
+WORKDIR /app
+
+# Copiar archivos de configuración de dependencias
+COPY apps/backend/package*.json ./
+COPY packages/shared/package*.json ./packages/shared/
+COPY packages/shared/src ./packages/shared/src
+COPY packages/shared/tsconfig.json ./packages/shared/
+COPY pnpm-workspace.yaml ./
+
+# Instalar pnpm globalmente
+RUN npm install -g pnpm
+
+# Instalar todas las dependencias (incluyendo dev para tests)
+RUN pnpm install --no-frozen-lockfile
+
+# Copiar archivos de Prisma desde la etapa base
+COPY --from=base /app/prisma ./prisma/
+
+# Copiar archivos construidos desde la etapa de builder
+COPY --from=builder --chown=nestjs:nodejs /app/dist ./dist
+
+# Copiar el paquete shared construido
+COPY --from=base --chown=nestjs:nodejs /app/packages ./packages
+
+# Cambiar ownership de node_modules al usuario nestjs
+RUN chown -R nestjs:nodejs /app/node_modules
+
+# Cambiar al usuario no-root
+USER nestjs
+
+# Generar cliente de Prisma como usuario nestjs
+RUN npx prisma generate
+
+# Exponer puerto
+EXPOSE 3000
+
+# Variables de entorno para test
+ENV NODE_ENV=test
+ENV PORT=3000
+
+# Comando de inicio que ejecuta migraciones y luego inicia la aplicación
+CMD ["sh", "-c", "npx prisma migrate deploy && node dist/main.js"]

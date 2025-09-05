@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { incomeService } from '../services/incomeService';
 import { statisticsKeys } from './useStatistics';
+import { isNotFoundError } from '../types/api';
 import type { CreateIncomeDto, UpdateIncomeDto } from '../types/income';
 
 export const incomeKeys = {
@@ -24,6 +25,14 @@ export const useIncome = (id: string) => {
     queryKey: incomeKeys.detail(id),
     queryFn: () => incomeService.findOne(id),
     enabled: !!id,
+    retry: (failureCount, error) => {
+      // No reintentar si es un error 404 (recurso no encontrado)
+      if (isNotFoundError(error)) {
+        return false;
+      }
+      // Reintentar hasta 3 veces para otros errores
+      return failureCount < 3;
+    },
   });
 };
 

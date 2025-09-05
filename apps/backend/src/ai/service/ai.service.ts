@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { IncomeRepository } from '../incomes/repositories/income.repository';
-import { ExpenseRepository } from '../expenses/repositories/expense.repository';
+import { IncomeRepository } from '../../incomes/repositories/income.repository';
+import { ExpenseRepository } from '../../expenses/repositories/expense.repository';
 import OpenAI from 'openai';
-import { FINANCE_ADVISOR_PROMPT } from './prompts/finance-advisor';
+import { FINANCE_ADVISOR_PROMPT } from '../prompts/finance-advisor';
 
 interface AIRequest {
   period: string;

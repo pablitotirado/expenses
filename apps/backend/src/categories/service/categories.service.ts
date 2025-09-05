@@ -3,9 +3,9 @@ import {
   ConflictException,
   NotFoundException,
 } from '@nestjs/common';
-import { CreateCategoryDto } from './dto/create-category.dto';
-import { CategoryRepository } from './repositories/category.repository';
-import { CategoryWithCount } from '../common/types/prisma.types';
+import { CreateCategoryDto } from '../dto/create-category.dto';
+import { CategoryRepository } from '../repositories/category.repository';
+import { CategoryWithCount } from '../../common/types/prisma.types';
 
 @Injectable()
 export class CategoriesService {
@@ -31,14 +31,21 @@ export class CategoriesService {
     return this._categoryRepository.findAll();
   }
 
-  findOne(id: string): Promise<CategoryWithCount | null> {
-    return this._categoryRepository.findOne(id);
+  async findOne(id: string): Promise<CategoryWithCount> {
+    const category = await this._categoryRepository.findOne(id);
+    if (!category) {
+      throw new NotFoundException(`Category with ID ${id} not found`);
+    }
+    return category;
   }
 
   async update(
     id: string,
     updateCategoryDto: CreateCategoryDto,
   ): Promise<CategoryWithCount> {
+    // First check if category exists
+    await this.findOne(id);
+
     try {
       return await this._categoryRepository.update(id, updateCategoryDto);
     } catch (error) {

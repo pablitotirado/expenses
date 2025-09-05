@@ -1,8 +1,14 @@
 import { useState } from 'react';
-import { Formik, Form, Field, ErrorMessage } from 'formik';
+import {
+  Formik,
+  Form,
+  Field,
+  ErrorMessage as FormikErrorMessage,
+} from 'formik';
 import { useCreateExpense } from '../hooks/useExpenses';
 import { useCategories } from '../hooks/useCategories';
 import { useFinancialSummary } from '../hooks/useStatistics';
+import { ErrorMessage } from './ErrorMessage';
 import {
   createBackendExpenseSchemaWithBalance,
   type BackendExpenseFormData,
@@ -120,7 +126,7 @@ export const ExpenseForm: React.FC = () => {
                       />
                     </div>
                     <div className="h-5 mt-1">
-                      <ErrorMessage
+                      <FormikErrorMessage
                         name="amount"
                         component="div"
                         className="text-sm text-red-600"
@@ -144,7 +150,7 @@ export const ExpenseForm: React.FC = () => {
                       placeholder="Ej: Almuerzo, Gasolina, etc. (opcional)"
                     />
                     <div className="h-5 mt-1">
-                      <ErrorMessage
+                      <FormikErrorMessage
                         name="description"
                         component="div"
                         className="text-sm text-red-600"
@@ -186,7 +192,7 @@ export const ExpenseForm: React.FC = () => {
                         ))}
                     </Field>
                     <div className="h-5 mt-1">
-                      <ErrorMessage
+                      <FormikErrorMessage
                         name="categoryId"
                         component="div"
                         className="text-sm text-red-600"
@@ -238,15 +244,10 @@ export const ExpenseForm: React.FC = () => {
                 </div>
 
                 {/* Mensaje de error de la mutación */}
-                {createExpenseMutation.error && (
-                  <div className="mt-3 p-3 bg-red-50 border border-red-200 rounded-md">
-                    <p className="text-sm text-red-600">
-                      {(createExpenseMutation.error as any)?.response?.data
-                        ?.message ||
-                        'Error al crear el gasto. Inténtalo de nuevo.'}
-                    </p>
-                  </div>
-                )}
+                <ErrorMessage
+                  error={createExpenseMutation.error}
+                  className="mt-3"
+                />
 
                 {/* Mensaje de éxito */}
                 {createExpenseMutation.isSuccess && (

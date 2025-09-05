@@ -248,6 +248,8 @@ importers:
         specifier: ^7.1.2
         version: 7.1.3(@types/node@18.19.123)(jiti@2.5.1)(lightningcss@1.30.1)(terser@5.43.1)
 
+  packages/e2e: {}
+
   packages/shared:
     devDependencies:
       typescript:

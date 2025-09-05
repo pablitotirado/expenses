@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
-import { IncomesService } from './incomes.service';
-import { IncomesController } from './incomes.controller';
+import { IncomesService } from './service/incomes.service';
+import { IncomesController } from './controller/incomes.controller';
 import { IncomeRepository } from './repositories/income.repository';
 
 @Module({

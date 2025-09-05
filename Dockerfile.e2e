@@ -1,0 +1,41 @@
+# Dockerfile específico para tests E2E
+FROM node:18-alpine AS base
+
+# Instalar dependencias del sistema
+RUN apk add --no-cache libc6-compat
+
+# Establecer directorio de trabajo
+WORKDIR /app
+
+# Copiar archivos de configuración de dependencias
+COPY packages/e2e/package*.json ./
+COPY pnpm-workspace.yaml ./
+COPY pnpm-lock.yaml ./
+
+# Instalar pnpm globalmente
+RUN npm install -g pnpm
+
+# Instalar dependencias
+RUN pnpm install --no-frozen-lockfile
+
+# Copiar código fuente de tests
+COPY packages/e2e/ .
+
+# Crear usuario no-root para seguridad
+RUN addgroup -g 1001 -S nodejs
+RUN adduser -S testuser -u 1001
+
+# Cambiar ownership de los archivos
+RUN chown -R testuser:nodejs /app
+
+# Cambiar al usuario no-root
+USER testuser
+
+# Exponer puerto (aunque no es necesario para tests, es buena práctica)
+EXPOSE 3000
+
+# Variables de entorno
+ENV NODE_ENV=test
+
+# Comando por defecto (se puede sobrescribir en docker-compose)
+CMD ["pnpm", "test"]

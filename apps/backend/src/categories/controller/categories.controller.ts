@@ -7,9 +7,9 @@ import {
   Param,
   Delete,
 } from '@nestjs/common';
-import { CategoriesService } from './categories.service';
-import { CreateCategoryDto } from './dto/create-category.dto';
-import { CategoryWithCount } from '../common/types/prisma.types';
+import { CategoriesService } from '../service/categories.service';
+import { CreateCategoryDto } from '../dto/create-category.dto';
+import { CategoryWithCount } from '../../common/types/prisma.types';
 
 @Controller('categories')
 export class CategoriesController {
@@ -28,7 +28,7 @@ export class CategoriesController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string): Promise<CategoryWithCount | null> {
+  findOne(@Param('id') id: string): Promise<CategoryWithCount> {
     return this._categoriesService.findOne(id);
   }
 

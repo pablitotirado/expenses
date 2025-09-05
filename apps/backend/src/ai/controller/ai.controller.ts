@@ -1,6 +1,6 @@
 import { Controller, Post, Body } from '@nestjs/common';
-import { AIService } from './ai.service';
-import { AIRequestDto, AIResponseDto } from './dto';
+import { AIService } from '../service/ai.service';
+import { AIRequestDto, AIResponseDto } from '../dto';
 
 @Controller('ia')
 export class AIController {
