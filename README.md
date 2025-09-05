@@ -123,3 +123,48 @@ Revisar los archivos `.env.example` en:
 ---
 
 **Tecnologías**: TypeScript, NestJS, React 19, Vite, TailwindCSS, Zustand, Prisma, PostgreSQL, OpenAI API, AWS, Pulumi, Docker, pnpm, Turbo
+
+## System Design Overview
+
+### Arquitectura
+
+La solución se basa en una arquitectura full-stack que combina:
+
+- **Frontend**: React SPA servido desde S3 con CloudFront
+- **Backend**: API NestJS en contenedores ECS Fargate
+- **Base de datos**: PostgreSQL en RDS con despliegue multi-AZ
+- **Red**: Application Load Balancer + API Gateway
+- **Infraestructura**: Definida como código con Pulumi
+
+El enfoque prioriza simplicidad de despliegue, separación de responsabilidades y escalabilidad horizontal, facilitando reproducibilidad, gestión de redes privadas, seguridad con IAM y grupos de seguridad, y observabilidad mediante logs y métricas.
+
+### Decisiones de Diseño
+
+**Servicios Administrados de AWS**:
+
+- ✅ Reducen la carga operativa
+- ❌ Mayor costo base y dependencia de la plataforma
+
+### Fortalezas
+
+- 🔧 **Mantenibilidad**: Código modular y bien estructurado
+- 📦 **Modularidad**: Separación clara de responsabilidades
+- 📈 **Escalabilidad**: Capacidad de escalar componentes independientemente
+- 🔄 **Reproducibilidad**: Infraestructura como código
+- 🔒 **Seguridad**: IAM y grupos de seguridad configurados
+- 📊 **Observabilidad**: Logs y métricas integradas
+
+### Áreas de Mejora
+
+- 🌐 **Complejidad de red**: Configuración inicial de VPC y permisos
+- 🎨 **Diseño UI**: Consistencia visual y experiencia de usuario
+- ⚡ **Performance**: Cacheo en rutas críticas
+- 🛡️ **Seguridad**: Implementación de WAF
+
+### Funcionalidades Futuras
+
+- 📄 **Reportes**: Descarga de reportes en PDF/Excel
+- 💰 **Presupuestos**: Alertas personalizadas de gastos
+- 🤖 **AI**: Categorización inteligente de gastos
+- 📊 **Análisis**: Importación de resúmenes bancarios y facturas
+- 💡 **Insights**: Análisis de costos con IA en base a facturas con multiples costos
